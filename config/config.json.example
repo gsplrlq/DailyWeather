@@ -1,0 +1,7 @@
+{
+  "WECHAT_APP_ID": "wx28c75c3f395873b7",
+  "WECHAT_APP_SECRET": "your_app_secret_here",
+  "TEMPLATE_ID": "CzDG2lqRT2JnoKiTVvpmEYSlq0eg8R2JwLXEIoaVeLA",
+  "OPENWEATHER_API_KEY": "your_openweathermap_api_key_here",
+  "QQ_MAP_KEY": "your_tencent_map_key_here"
+}

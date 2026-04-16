@@ -1,0 +1,33 @@
+{
+  "collectionName": "subscriptions",
+  "description": "用户订阅消息状态存储集合",
+  "schema": {
+    "openId": "string - 用户唯一标识",
+    "subscribed": "boolean - 是否已订阅",
+    "pushTime": "string - 推送时间 HH:MM，默认 08:00",
+    "city": "string - 用户所在城市",
+    "locale": "string - 用户语言偏好 zh/en",
+    "createTime": "datetime - 创建时间",
+    "lastUpdateTime": "datetime - 最后更新时间",
+    "lastSubscribeTime": "datetime - 最后订阅时间"
+  },
+  "indexes": [
+    {
+      "name": "openId_index",
+      "fields": [
+        { "fieldPath": "openId", "order": "ascending" }
+      ]
+    },
+    {
+      "name": "subscribed_index",
+      "fields": [
+        { "fieldPath": "subscribed", "order": "ascending" }
+      ]
+    }
+  ],
+  "permission": {
+    "read": "auth.openid",  // 仅用户自己可读
+    "write": "auth.openid", // 仅用户自己可写
+    "cloud_function_write": true  // 云函数可写入
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "generateWeatherImage",
+  "version": "1.0.0",
+  "description": "每日生成天气图片并保存到数据库",
+  "main": "index.js",
+  "keywords": ["wechat", "cloud", "weather", "image"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "wx-server-sdk": "^2.6.3"
+  }
+}

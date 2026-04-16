@@ -1,0 +1,30 @@
+{
+  "version": "2.0",
+  "envId": "cloud1-4g4pgi0p302de70d",
+  "region": "ap-guangzhou",
+  "containerGroups": [
+    {
+      "id": "weather-push",
+      "name": "weather-push-service",
+      "memory": 512,
+      "cpu": 1,
+      "instanceWeight": 100,
+      "dockerfilePath": "Dockerfile",
+      "buildDir": ".",
+      " port": 8080,
+      "envVariables": {},
+      "leastInstanceCount": 1,
+      "maxInstanceCount": 3,
+      "policyDetails": [
+        {
+          "type": "cpu",
+          "threshold": 80,
+          "scaleMode": "same',
+          "step": 1
+        }
+      ],
+      "publicAccess": true,
+      "uniqueName": "weather-push"
+    }
+  ]
+}

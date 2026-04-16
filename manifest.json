@@ -1,0 +1,28 @@
+{
+    "name" : "今天天气行不行",
+    "appid" : "__UNI__782B1BA",
+    "description" : "你的每日可爱天气小助手",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "mp-weixin" : {
+        "appid" : "wx28c75c3f395873b7",
+        "setting" : {
+            "urlCheck" : false,
+            "es6" : true,
+            "postcss" : true,
+            "minified" : true
+        },
+        "usingComponents" : true,
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "获取本地天气"
+            }
+        },
+        "requiredPrivateInfos" : [ "getLocation" ]
+    },
+    "uniStatistics" : {
+        "enable" : false
+    },
+    "vueVersion" : "3"
+}
