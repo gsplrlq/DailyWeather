@@ -11,37 +11,37 @@ const dbName = 'daily_weather_images'
  */
 const WEATHER_PROMPTS = {
   sunny: [
-    'cute corgi puppy enjoying warm spring sunshine, playing in blooming flower field, cherry blossoms falling, happy smile, kawaii anime style, soft pastel colors, high quality',
-    'cute corgi puppy wearing tiny sunglasses, enjoying hot summer sunshine on tropical beach, palm trees around, happy expression, kawaii anime style, vibrant colors, high quality',
-    'cute corgi puppy playing in golden autumn leaves, warm sunlight through orange leaves, cozy sweater, kawaii anime style, warm colors, high quality',
-    'cute corgi puppy in soft winter sunlight, snowy landscape, cozy warm sweater, kawaii anime style, soft colors, high quality',
-    'cute corgi puppy running happily in bright sunshine meadow, butterflies and flowers around, joyful expression, kawaii anime style, bright colors, high quality',
-    'cute corgi puppy sunbathing on comfortable wooden deck, lazy afternoon sunshine, peaceful smile, kawaii anime style, warm pastel, high quality',
-    'cute corgi puppy with flower crown, dancing in morning sunshine, rainbow in background, kawaii anime style, dreamy colors, high quality'
+    'cute West Highland White Terrier puppy enjoying warm spring sunshine, playing in blooming flower field, cherry blossoms falling, happy smile, kawaii anime style, soft pastel colors, high quality',
+    'cute West Highland White Terrier puppy wearing tiny sunglasses, enjoying hot summer sunshine on tropical beach, palm trees around, happy expression, kawaii anime style, vibrant colors, high quality',
+    'cute West Highland White Terrier puppy playing in golden autumn leaves, warm sunlight through orange leaves, cozy sweater, kawaii anime style, warm colors, high quality',
+    'cute West Highland White Terrier puppy in soft winter sunlight, snowy landscape, cozy warm sweater, kawaii anime style, soft colors, high quality',
+    'cute West Highland White Terrier puppy running happily in bright sunshine meadow, butterflies and flowers around, joyful expression, kawaii anime style, bright colors, high quality',
+    'cute West Highland White Terrier puppy sunbathing on comfortable wooden deck, lazy afternoon sunshine, peaceful smile, kawaii anime style, warm pastel, high quality',
+    'cute West Highland White Terrier puppy with flower crown, dancing in morning sunshine, rainbow in background, kawaii anime style, dreamy colors, high quality'
   ],
 
   cloudy: [
-    'cute corgi puppy sitting on fluffy cloud, looking at the sky curiously with dreamy eyes, floating gently, soft clouds all around, kawaii anime style, pastel colors, high quality',
-    'cute corgi puppy resting on big soft cloud pillow, gentle breeze, peaceful expression, cloudy sky background, kawaii anime style, muted tones, high quality',
-    'cute corgi puppy sitting on rainbow cloud, watching colorful sky, dreamy atmosphere, kawaii anime style, soft gradient colors, high quality',
-    'cute corgi puppy wrapped in fluffy blanket on cloud, cozy nap time, gentle wind, kawaii anime style, warm colors, high quality',
-    'cute corgi puppy dancing on floating clouds, cotton candy sky, playful expression, kawaii anime style, dreamy pastel colors, high quality'
+    'cute West Highland White Terrier puppy sitting on fluffy cloud, looking at the sky curiously with dreamy eyes, floating gently, soft clouds all around, kawaii anime style, pastel colors, high quality',
+    'cute West Highland White Terrier puppy resting on big soft cloud pillow, gentle breeze, peaceful expression, cloudy sky background, kawaii anime style, muted tones, high quality',
+    'cute West Highland White Terrier puppy sitting on rainbow cloud, watching colorful sky, dreamy atmosphere, kawaii anime style, soft gradient colors, high quality',
+    'cute West Highland White Terrier puppy wrapped in fluffy blanket on cloud, cozy nap time, gentle wind, kawaii anime style, warm colors, high quality',
+    'cute West Highland White Terrier puppy dancing on floating clouds, cotton candy sky, playful expression, kawaii anime style, dreamy pastel colors, high quality'
   ],
 
   rainy: [
-    'cute corgi puppy wearing bright yellow raincoat with hood, holding red umbrella, happily splashing in rain puddles, raindrops and splashes around, playful expression, kawaii anime style, soft colors, high quality',
-    'cute corgi puppy wearing blue rain boots, jumping in puddle, happy smile with rain drops on fur, cozy indoor window background, kawaii anime style, cool blue tones, high quality',
-    'cute corgi puppy under big mushroom umbrella, watching rain from cozy spot, tiny snail nearby, kawaii anime style, fresh green colors, high quality',
-    'cute corgi puppy wearing tiny waterproof cape, playing with rubber duck in rain, rainbow appearing, kawaii anime style, vibrant colors, high quality',
-    'cute corgi puppy wrapped in towel by window, watching rain with hot cocoa, cozy indoor scene, kawaii anime style, warm tones, high quality'
+    'cute West Highland White Terrier puppy wearing bright yellow raincoat with hood, holding red umbrella, happily splashing in rain puddles, raindrops and splashes around, playful expression, kawaii anime style, soft colors, high quality',
+    'cute West Highland White Terrier puppy wearing blue rain boots, jumping in puddle, happy smile with rain drops on fur, cozy indoor window background, kawaii anime style, cool blue tones, high quality',
+    'cute West Highland White Terrier puppy under big mushroom umbrella, watching rain from cozy spot, tiny snail nearby, kawaii anime style, fresh green colors, high quality',
+    'cute West Highland White Terrier puppy wearing tiny waterproof cape, playing with rubber duck in rain, rainbow appearing, kawaii anime style, vibrant colors, high quality',
+    'cute West Highland White Terrier puppy wrapped in towel by window, watching rain with hot cocoa, cozy indoor scene, kawaii anime style, warm tones, high quality'
   ],
 
   snowy: [
-    'cute corgi puppy wearing red knitted scarf and cozy winter sweater, playing in fresh snow, catching snowflakes on tongue, building a tiny snowman, winter forest background, kawaii anime style, cool colors, high quality',
-    'cute corgi puppy wearing earmuffs and mittens, rolling in snowy yard, happy expression, snow angels in background, kawaii anime style, white and blue tones, high quality',
-    'cute corgi puppy inside cozy snow globe, tiny cabin and pine trees, magical snow falling, kawaii anime style, sparkle effects, high quality',
-    'cute corgi puppy pulling tiny sled loaded with presents, snowy village background, Christmas atmosphere, kawaii anime style, festive colors, high quality',
-    'cute corgi puppy warming by fireplace with hot chocolate, snow visible through window, cozy winter scene, kawaii anime style, warm orange tones, high quality'
+    'cute West Highland White Terrier puppy wearing red knitted scarf and cozy winter sweater, playing in fresh snow, catching snowflakes on tongue, building a tiny snowman, winter forest background, kawaii anime style, cool colors, high quality',
+    'cute West Highland White Terrier puppy wearing earmuffs and mittens, rolling in snowy yard, happy expression, snow angels in background, kawaii anime style, white and blue tones, high quality',
+    'cute West Highland White Terrier puppy inside cozy snow globe, tiny cabin and pine trees, magical snow falling, kawaii anime style, sparkle effects, high quality',
+    'cute West Highland White Terrier puppy pulling tiny sled loaded with presents, snowy village background, Christmas atmosphere, kawaii anime style, festive colors, high quality',
+    'cute West Highland White Terrier puppy warming by fireplace with hot chocolate, snow visible through window, cozy winter scene, kawaii anime style, warm orange tones, high quality'
   ]
 }
 
@@ -50,20 +50,20 @@ const WEATHER_PROMPTS = {
  */
 const SEASONAL_PROMPTS = {
   spring: [
-    'cute corgi puppy surrounded by cherry blossoms, spring festival, kawaii anime style, pink petals floating, soft spring colors, high quality',
-    'cute corgi puppy playing in blooming tulip garden, butterflies around, fresh spring morning, kawaii anime style, vibrant flower colors, high quality'
+    'cute West Highland White Terrier puppy surrounded by cherry blossoms, spring festival, kawaii anime style, pink petals floating, soft spring colors, high quality',
+    'cute West Highland White Terrier puppy playing in blooming tulip garden, butterflies around, fresh spring morning, kawaii anime style, vibrant flower colors, high quality'
   ],
   summer: [
-    'cute corgi puppy at summer beach party, wearing flower lei, coconut drinks, tropical flowers, kawaii anime style, bright summer colors, high quality',
-    'cute corgi puppy cooling in swimming pool, inflatable flamingo, summer vacation vibes, kawaii anime style, tropical blue tones, high quality'
+    'cute West Highland White Terrier puppy at summer beach party, wearing flower lei, coconut drinks, tropical flowers, kawaii anime style, bright summer colors, high quality',
+    'cute West Highland White Terrier puppy cooling in swimming pool, inflatable flamingo, summer vacation vibes, kawaii anime style, tropical blue tones, high quality'
   ],
   autumn: [
-    'cute corgi puppy in pumpkin patch, autumn harvest, falling leaves, warm harvest moon, kawaii anime style, orange and brown tones, high quality',
-    'cute corgi puppy making apple pie with family, cozy kitchen, autumn baking, kawaii anime style, warm golden colors, high quality'
+    'cute West Highland White Terrier puppy in pumpkin patch, autumn harvest, falling leaves, warm harvest moon, kawaii anime style, orange and brown tones, high quality',
+    'cute West Highland White Terrier puppy making apple pie with family, cozy kitchen, autumn baking, kawaii anime style, warm golden colors, high quality'
   ],
   winter: [
-    'cute corgi puppy in magical winter wonderland, ice crystals and snow sparkles, northern lights, kawaii anime style, magical blue tones, high quality',
-    'cute corgi puppy celebrating winter holidays, cozy fireplace, gift boxes, kawaii anime style, festive warm colors, high quality'
+    'cute West Highland White Terrier puppy in magical winter wonderland, ice crystals and snow sparkles, northern lights, kawaii anime style, magical blue tones, high quality',
+    'cute West Highland White Terrier puppy celebrating winter holidays, cozy fireplace, gift boxes, kawaii anime style, festive warm colors, high quality'
   ]
 }
 
@@ -141,7 +141,11 @@ async function generateImage(prompt) {
  */
 async function saveToDatabase(imagesData) {
   const now = new Date()
-  const today = now.toLocaleString('zh-CN').replace(/\//g, '-').split(' ')[0]
+  const year = now.getFullYear(); // 获取完整的年份 (4位, 2026) [4, 5]
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // 获取当前月份 (0-11, 需要+1, 并补0) [5, 11]
+  const day = String(now.getDate()).padStart(2, '0'); // 获取当前日 (1-31, 并补0) [5, 11]
+
+  const today = `${year}-${month}-${day}`;
 
   try {
     const { data: existing } = await db.collection(dbName)

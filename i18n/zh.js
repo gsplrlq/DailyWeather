@@ -29,6 +29,7 @@ export default {
     'broken clouds': '阴',
     'overcast clouds': '阴天',
     'shower rain': '阵雨',
+    'light rain': '小雨',
     'rain': '下雨',
     'thunderstorm': '雷暴',
     'snow': '下雪',

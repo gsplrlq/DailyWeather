@@ -4,11 +4,42 @@ const axios = require('axios')
 const app = express()
 app.use(express.json())
 
-// 从配置文件加载密钥
-const config = require('@/config/config.json')
+// 云托管环境可以读取本地文件
+const fs = require('fs')
+const path = require('path')
+
+// 加载配置
+const config = loadConfig()
 const APPID = config.WECHAT_APP_ID
 const APPSECRET = config.WECHAT_APP_SECRET
 const TEMPLATE_ID = config.TEMPLATE_ID
+
+/**
+ * 读取配置文件（云托管环境）
+ */
+function loadConfig() {
+  try {
+    // 云托管环境中的文件路径
+    const configPath = path.join(__dirname, '../../config/config.json')
+    if (fs.existsSync(configPath)) {
+      const configData = fs.readFileSync(configPath, 'utf8')
+      console.log('[config] 从路径加载配置:', configPath)
+      return JSON.parse(configData)
+    }
+  } catch (e) {
+    console.error('[config] 加载配置失败:', e)
+  }
+  
+  return getDefaultConfig()
+}
+
+function getDefaultConfig() {
+  return {
+    WECHAT_APP_ID: '',
+    WECHAT_APP_SECRET: '',
+    TEMPLATE_ID: ''
+  }
+}
 
 // access_token 缓存
 let cachedAccessToken = null

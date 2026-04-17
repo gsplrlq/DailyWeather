@@ -5,8 +5,11 @@
       <view class="date-location">
         <text class="date-icon">&#x1F4C5;</text>
         <text class="date-text">{{ formattedDate }}</text>
-        <text class="location-icon">&#x1F4CD;</text>
-        <text class="city-name">{{ weatherData?.cityName || t('common.loading') }}</text>
+        <view class="location-wrapper" @tap="showCitySelector = true">
+          <text class="location-icon">&#x1F4CD;</text>
+          <text class="city-name">{{ displayCityName }}</text>
+          <text class="city-arrow">▼</text>
+        </view>
       </view>
       <view class="actions">
         <!-- Language Switch -->
@@ -101,9 +104,6 @@
           @load="onImageLoad"
         />
       </view>
-      <view class="image-prompt" v-if="dailyWeatherImagePrompt">
-        <text class="prompt-text">提示词：{{ dailyWeatherImagePrompt }}</text>
-      </view>
       <view class="image-date" v-if="dailyWeatherImageDate">
         <text class="date-text-small">更新于：{{ dailyWeatherImageDate }}</text>
       </view>
@@ -173,12 +173,60 @@
       <text class="error-text">{{ errorMsg }}</text>
       <button class="retry-btn" @tap="refreshWeather">{{ t('common.retry') }}</button>
     </view>
+
+    <!-- City Selector Modal -->
+    <view v-if="showCitySelector" class="city-selector-overlay" @tap="closeCitySelector">
+      <view class="city-selector-modal" @tap.stop>
+        <!-- Header -->
+        <view class="city-selector-header">
+          <view class="selector-title">选择城市</view>
+          <view class="selector-close" @tap="closeCitySelector">✕</view>
+        </view>
+
+        <!-- Search Bar -->
+        <view class="city-search-bar">
+          <text class="search-icon">🔍</text>
+          <input
+            class="search-input"
+            v-model="citySearchKeyword"
+            placeholder="搜索城市..."
+            placeholder-class="search-placeholder"
+            focus
+          />
+          <view v-if="citySearchKeyword" class="search-clear" @tap="citySearchKeyword = ''">✕</view>
+        </view>
+
+        <!-- Current Location Option -->
+        <view class="city-option" @tap="selectLocation">
+          <text class="option-icon">📍</text>
+          <text class="option-text">使用当前位置</text>
+        </view>
+
+        <!-- City List -->
+        <scroll-view class="city-list" scroll-y>
+          <view
+            v-for="city in filteredCities"
+            :key="city.id"
+            class="city-item"
+            :class="{ selected: currentCity?.id === city.id }"
+            @tap="selectCity(city)"
+          >
+            <text class="city-name-text">{{ city.name }}</text>
+            <text v-if="currentCity?.id === city.id" class="city-check">✓</text>
+          </view>
+          <view v-if="filteredCities.length === 0" class="city-empty">
+            <text>暂无匹配城市</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import weatherService from '../../common/weatherService.js'
 import weatherImageService from '../../common/weatherImageService.js'
+import cityService from '../../common/cityService.js'
 import i18n from '../../i18n/index.js'
 import { trackPage, trackClick, trackWeatherLoaded, trackWeatherError, trackLanguageSwitch } from '../../common/analytics.js'
 import { requestSubscription, getSubscribeStatus, trackSubscribe, unsubscribeAsync, sendTestPush } from '../../common/pushService.js'
@@ -187,14 +235,17 @@ export default {
   data() {
     return {
       weatherData: null,
-      dailyWeatherImages: null,  // 从数据库获取的4张图片
-      dailyWeatherImageUrl: '',  // 当前天气对应的图片URL
-      dailyWeatherImagePrompt: '', // 当前图片的提示词
+      dailyWeatherImages: null,
+      dailyWeatherImageUrl: '',
       loading: false,
       errorMsg: '',
       currentLocale: 'zh',
       isSubscribed: false,
-      imageLoadFailed: false
+      imageLoadFailed: false,
+      // 城市选择相关
+      showCitySelector: false,
+      citySearchKeyword: '',
+      currentCity: null // 当前选中的城市对象（不保存）
     }
   },
   computed: {
@@ -215,6 +266,13 @@ export default {
     },
     currentLangName() {
       return i18n.getCurrentLocale() === 'zh' ? '中文' : 'EN'
+    },
+    // 显示的城市名称
+    displayCityName() {
+      if (this.currentCity) {
+        return this.currentCity.name
+      }
+      return this.weatherData?.cityName || this.t('common.loading')
     },
     // Get weather emoji by icon code
     currentWeatherEmoji() {
@@ -248,6 +306,13 @@ export default {
       if (iconCode.startsWith('13')) return 'icon-snowy'
       return 'icon-cloudy'
     },
+    // 过滤后的城市列表
+    filteredCities() {
+      if (!this.citySearchKeyword) {
+        return cityService.getPopularCities()
+      }
+      return cityService.searchCities(this.citySearchKeyword)
+    },
     // 从数据库获取的天气图片
     dailyWeatherImage() {
       if (!this.dailyWeatherImages || !this.weatherData) return null
@@ -264,10 +329,6 @@ export default {
     dailyWeatherImageUrl() {
       return this.dailyWeatherImage || ''
     },
-    // 当前图片提示词（从天气数据中获取）
-    dailyWeatherImagePrompt() {
-      return this.weatherData?.weatherImagePrompt || ''
-    },
     // 图片更新日期
     dailyWeatherImageDate() {
       if (!this.weatherData) return ''
@@ -276,20 +337,48 @@ export default {
   },
   onLoad() {
     this.currentLocale = i18n.getCurrentLocale()
-    // ????????????
-    trackPage('index')
-    // ???F????
+    // 检查订阅状态
     this.checkSubscribeStatus()
+    // 加载天气（默认使用定位）
     this.loadWeather()
   },
   onShow() {
-    // ?????????????F????
+    // 每次显示时检查订阅状态
     this.checkSubscribeStatus()
+    
+    if (this.isSubscribed && this.isTimeForReminder()) {
+      this.showWeatherReminder()
+    }
   },
   onPullDownRefresh() {
     this.refreshWeather()
   },
   methods: {
+    // ========== 城市选择相关方法 ==========
+
+    closeCitySelector() {
+      this.showCitySelector = false
+      this.citySearchKeyword = ''
+    },
+
+    // 选择使用定位
+    selectLocation() {
+      this.currentCity = null
+      cityService.setCurrentCity(null)
+      this.closeCitySelector()
+      // 重新加载天气（使用定位）
+      this.loadWeather()
+    },
+
+    // 选择城市（直接查询天气，不保存）
+    selectCity(city) {
+      this.currentCity = city
+      cityService.setCurrentCity(city)
+      this.closeCitySelector()
+      // 重新加载天气
+      this.loadWeather()
+    },
+
     // 获取天气类型
     getWeatherType(iconCode) {
       if (iconCode === '01d' || iconCode === '01n') return 'sunny'
@@ -319,6 +408,23 @@ export default {
     checkSubscribeStatus() {
       const status = getSubscribeStatus()
       this.isSubscribed = status.subscribed
+    },
+    showWeatherReminder() {
+      uni.showModal({
+        title: '今日天气提醒',
+        content: '今日天气提醒',
+        success: (res) => {
+          if (res.confirm) {
+            this.handleSubscribe()
+          }
+        }
+      })
+    },
+    isTimeForReminder() {
+      const now = new Date()
+      const hour = now.getHours()
+      const minute = now.getMinutes()
+      return (hour === 8 && minute < 30) || (hour === 7 && minute > 30)
     },
     // Translation method
     t(key) {
@@ -443,7 +549,20 @@ export default {
       this.loading = true
       this.errorMsg = ''
       try {
-        const data = await weatherService.getCurrentWeather()
+        let data
+
+        if (this.currentCity) {
+          // 使用当前选择的城市（通过经纬度查询）
+          data = await weatherService.fetchWeatherByCoords(
+            this.currentCity.latitude,
+            this.currentCity.longitude,
+            this.currentCity.name
+          )
+        } else {
+          // 使用定位获取天气
+          data = await weatherService.getCurrentWeather()
+        }
+
         this.weatherData = data
         trackWeatherLoaded(data)
         // 天气数据加载后，加载对应的每日天气图片
@@ -461,12 +580,8 @@ export default {
       trackClick('refresh', 'index')
       uni.showLoading({ title: i18n.t('common.loading') })
       try {
-        const data = await weatherService.refreshWeather()
-        this.weatherData = data
-        this.errorMsg = ''
-        this.imageLoadFailed = false
-        // 刷新天气后重新加载每日天气图片
-        await this.loadDailyWeatherImages()
+        // 使用当前城市或定位重新加载天气
+        await this.loadWeather()
       } catch (error) {
         console.error('Refresh weather error:', error)
         this.errorMsg = this.t('common.failedToRefresh')
@@ -1109,5 +1224,211 @@ export default {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* City Selector Modal Styles */
+.city-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.city-selector-modal {
+  background: white;
+  border-radius: 30rpx 30rpx 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.city-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.selector-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.selector-close {
+  font-size: 40rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.city-search-bar {
+  display: flex;
+  align-items: center;
+  margin: 20rpx 30rpx;
+  padding: 20rpx 25rpx;
+  background: #f5f5f5;
+  border-radius: 30rpx;
+}
+
+.search-icon {
+  font-size: 28rpx;
+  margin-right: 15rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.search-placeholder {
+  color: #999;
+}
+
+.search-clear {
+  font-size: 28rpx;
+  color: #999;
+  padding: 5rpx;
+}
+
+.city-option {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 40rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.city-option:active {
+  background: #f9f9f9;
+}
+
+.option-icon {
+  font-size: 32rpx;
+  margin-right: 20rpx;
+}
+
+.option-text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.city-list {
+  flex: 1;
+  max-height: 40vh;
+  padding: 0 30rpx;
+}
+
+.city-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 20rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.city-item:active {
+  background: #f9f9f9;
+}
+
+.city-item.selected {
+  background: #f0f8ff;
+}
+
+.city-name-text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.city-item.selected .city-name-text {
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.city-check {
+  font-size: 32rpx;
+  color: #1890ff;
+}
+
+.city-empty {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.saved-cities-section {
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background: #fafafa;
+}
+
+.section-title {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+
+.saved-cities-list {
+  white-space: nowrap;
+  display: flex;
+  gap: 15rpx;
+}
+
+.saved-city-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 15rpx 25rpx;
+  background: white;
+  border-radius: 30rpx;
+  border: 2rpx solid #e0e0e0;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.saved-city-tag.selected {
+  background: #e6f7ff;
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.city-remove {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 5rpx;
+}
+
+.saved-city-tag.selected .city-remove {
+  color: #1890ff;
+}
+
+/* Location wrapper */
+.location-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.city-arrow {
+  font-size: 20rpx;
+  margin-left: 8rpx;
+  opacity: 0.8;
 }
 </style>

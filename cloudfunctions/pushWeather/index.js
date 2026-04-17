@@ -1,15 +1,13 @@
 const cloud = require('wx-server-sdk')
 const https = require('https')
 
-cloud.init({ env: 'cloud1-4g4pgi0p302de70d', traceUser: true })
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 
-// 从配置文件加载密钥
-const config = require('@/config/config.json')
-const APPID = config.WECHAT_APP_ID
-const APPSECRET = config.WECHAT_APP_SECRET
-const TEMPLATE_ID = config.TEMPLATE_ID
+const APPID = "wx28c75c3f395873b7";
+const APPSECRET = "20961cf85729b4f14df05c340b075b23";
+const TEMPLATE_ID =  "CzDG2lqRT2JnoKiTVvpmEYSlq0eg8R2JwLXEIoaVeLA";
 
 // access_token 缓存
 let cachedAccessToken = null
